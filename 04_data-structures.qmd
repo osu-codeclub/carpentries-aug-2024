@@ -7,6 +7,7 @@ execute:
   keep-md: true
 editor_options: 
   chunk_output_type: console
+number-sections: true
 ---
 
 <br>
@@ -593,7 +594,7 @@ mean(cats$weight)
 This material was adapted from
 [this Carpentries lesson episode](https://swcarpentry.github.io/r-novice-gapminder/04-data-structures-part1.html).
 To learn more about data types and data structures, see
-[this chapter](https://swcarpentry.github.io/r-novice-inflammation/13-supp-data-structures.html).
+[this episode from a separate Carpentries lesson](https://swcarpentry.github.io/r-novice-inflammation/13-supp-data-structures.html).
 
 ```{r, include=FALSE, echo=FALSE}
 file.remove("feline-data.csv")
