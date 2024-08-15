@@ -1,5 +1,6 @@
 # Data Frame Manipulation with *dplyr*
-Software Carpentry, with edits by Jelmer Poelstra
+Author: Software Carpentry, with edits by Jelmer Poelstra. Date:
+2024-08-19
 
 <br>
 
@@ -14,12 +15,12 @@ will also use pipes (`%>%`) to combine them.
 - `select()` to pick columns (variables)
 - `filter()` to pick rows (observations)
 - `rename()` to change column names
-- `arrange()` to change the order of rows (i.e., to sort)
+- `arrange()` to change the order of rows (i.e., to sort a data frame)
 - `mutate()` to modify values in columns and create new columns
 - `summarize()` (with `group_by()`) to compute summaries across rows
 
-All of these functions take a data frame as the *input*, and return a
-new, modified data frame as the output.
+Importantly, all these functions take a data frame as the *input*, and
+return a new, modified data frame as the output.
 
 *dplyr* belongs to a broader family of R packages designed for
 “dataframe-centric” data science called the “Tidyverse”. The other
@@ -62,7 +63,8 @@ like this one, merely contain data sets), and we can load it as follows:
 library(gapminder)
 ```
 
-Let’s take a look at the dataset:
+Let’s take a look at the dataset, which is stored in a data frame also
+called `gapminder`:
 
 ``` r
 gapminder
@@ -102,8 +104,10 @@ and 2007):
 ## `select()` to pick columns (variables)
 
 To subset a data frame by keeping or removing certain columns, we can
-use the `select()` function. By default, this will only keep the columns
-that you specify, typically simply by listing those columns by name:
+use the `select()` function.
+
+By default, this function will only keep the columns that you specify,
+which you typically do simply by listing those columns by name:
 
 ``` r
 select(.data = gapminder, year, country, gdpPercap)
@@ -153,19 +157,20 @@ Two closing remarks about `select()`:
 
 - There are also ways to select *ranges* of columns, and to match
   columns by their *partial names*, but that is beyond the scope of this
-  short workshop.
+  short workshop (check the `select()` help by typing `?select` to learn
+  more about this).
 
 - Because the order of the columns in the output data frame will be
-  exactly as you listed them, you can also use `select()` to reorder
-  columns. (There is also a `reorder()` function that is handy
-  especially when a data frame has *many* columns.)
+  exactly as you listed them, you can also use `select()` to **reorder
+  columns**. (There is also a specialized `reorder()` function that is
+  handy especially when a data frame has *many* columns.)
 
 <br>
 
 ## `rename()` to change column names, and the pipe (`%>%`)
 
-Our next *dplyr* function is one of the most simple: `rename()` to
-change the column names in a data frame.
+Our next *dplyr* function is one of the simplest: `rename()` to change
+column names.
 
 The syntax to specify the new and old name within the function is
 `new_name = old_name`. For example, building on the column selection we
@@ -200,8 +205,8 @@ frames and moving on to the next step.
 But there is a nicer way of dong this, using so-called “piping” with a
 pipe operator: we will use the `%>%` pipe operator.
 
-Let’s start by seeing pipes into action, which is a reformulation of the
-code we used above to first select 3 columns and then rename 1 of them:
+Let’s start by seeing pipes into action with a reformulation of the code
+we used above to first select 3 columns and then rename 1 of them:
 
 ``` r
 gapminder %>%
@@ -224,17 +229,20 @@ gapminder %>%
     10  1997 Afghanistan           635.
     # ℹ 1,694 more rows
 
-What is happening here is that we take the `gapminder` data frame, and
-push (or “pipe”) it into the `select()` function, whose output in turn
-is piped into the `rename()` function. You can think of the pipe as
-“then”: take `gapminder`, *then* select, *then* rename.
+What happened here is that we took the `gapminder` data frame, pushed
+(or “piped”) it into the `select()` function, whose output was in turn
+piped into the `rename()` function.
 
-When we do this, the piped input replaces our previous way of specifying
-the input (with the `.data` argument). Under the hood, when you pipe
-something into a function, this will by default be passed to *the first
-argument of the function*. *dplyr* (and other tidyverse) functions are
-quite consistent with the first argument always being a data frame,
-which makes them “pipe-friendly”.
+You can think of the pipe as **“then”**: take `gapminder`, *then*
+select, *then* rename.
+
+When using pipes, piped input replaces our previous way of specifying
+the input with the `.data` argument.
+
+Under the hood, when you pipe something into a function, this will by
+default be passed to **the first argument of the function**. *dplyr*
+(and other tidyverse) functions are quite consistent with the first
+argument always being a data frame, which makes them “pipe-friendly”.
 
 Using pipes is slightly less typing and more readable than successive
 assignments. (It is also faster and uses less computer memory.)
@@ -243,10 +251,10 @@ assignments. (It is also faster and uses less computer memory.)
 
 ## `filter()` to pick rows (observations)
 
-The `filter()` function can be used to keep only certain rows. Whereas
-column-selection often simply happens by column name as we’ve seen with
-`select()`, row-selection tends to be a more intricate and interesting
-topic.
+The `filter()` function can be used to keep only rows that match a
+condition. Whereas column-selection often simply happens by column name
+as we’ve seen with `select()`, row-selection tends to be a more
+intricate and interesting topic.
 
 Let’s start with the following example, where we want to keep
 observations (remember, these are countries in a given year) that have a
@@ -446,8 +454,8 @@ largest values for a certain column: above we see that the country and
 year with the smallest population size is Sao Tome and Principe in 1952.
 
 Default sorting is from small to large, but of course, we may also want
-to sort in the reverse order, in other words, descendingly, which you
-can do using the `desc()` helper function:
+to sort in the reverse order. You can do this using the `desc()`
+(descending, large-to-small) helper function:
 
 ``` r
 gapminder %>%
@@ -501,13 +509,19 @@ The above example sorts first by continent and *then* by country.
 
 So far, we’ve focused on functions that “merely” subset and reorganize
 data frames. We’ve also seen how we can modify column names. But we
-haven’t seen how we can change the data in data frames.
+haven’t seen how we can *change the data* or *compute derived data* in
+data frames.
 
-We can do this with the `mutate()` function. For example:
+We can do this with the `mutate()` function. For example, say that we
+want to create a new column that has the population size in millions
+rather than in individuals:
+
+called `pop_million` that is the result of dividing the values in the
+`pop` column by a million.
 
 ``` r
 gapminder %>%
-  mutate(pop_million = pop / 1000000)
+  mutate(pop_million = pop / 10^6)
 ```
 
     # A tibble: 1,704 × 7
@@ -525,18 +539,15 @@ gapminder %>%
     10 Afghanistan Asia       1997    41.8 22227415      635.       22.2 
     # ℹ 1,694 more rows
 
-The code above creates a new column called `pop_million` that is the
-result of dividing the values in the `pop` column by a million. So, to
-the right of the `=` we have an expression that generates the values
-(often referring to other columns) and to the left of the `=` we have a
-name for the column that is to be created.
+So, the code above created a new column called `pop_million` that is the
+result of dividing the values in the `pop` column by a million.
 
 To modify a column rather than adding a new one, simply assign back to
 the same name:
 
 ``` r
 gapminder %>%
-  mutate(pop = pop / 1000000)
+  mutate(pop = pop / 10^6)
 ```
 
     # A tibble: 1,704 × 6
@@ -554,10 +565,14 @@ gapminder %>%
     10 Afghanistan Asia       1997    41.8 22.2       635.
     # ℹ 1,694 more rows
 
+<br>
+
+------------------------------------------------------------------------
+
 ### Challenge 2
 
-Create a new column called `gdp_billion` that has the absolute GDP
-(i.e., not relative to population size) in billions.
+**A:** Create a new column called `gdp_billion` that has the absolute
+GDP (i.e., not relative to population size) in units of billions.
 
 <details>
 <summary>
@@ -586,7 +601,39 @@ gapminder %>%
 
 </details>
 
-Bonus: create a new column that has a 1000 in every row. TODO
+**B:** (Bonus) Create a new column `planet` that has the value `earth`
+in every row.
+
+<details>
+<summary>
+Click for the solution
+</summary>
+
+If you simply provide a value, this will be repeated in every row:
+
+``` r
+gapminder %>%
+  mutate(planet = "earth")
+```
+
+    # A tibble: 1,704 × 7
+       country     continent  year lifeExp      pop gdpPercap planet
+       <fct>       <fct>     <int>   <dbl>    <int>     <dbl> <chr> 
+     1 Afghanistan Asia       1952    28.8  8425333      779. earth 
+     2 Afghanistan Asia       1957    30.3  9240934      821. earth 
+     3 Afghanistan Asia       1962    32.0 10267083      853. earth 
+     4 Afghanistan Asia       1967    34.0 11537966      836. earth 
+     5 Afghanistan Asia       1972    36.1 13079460      740. earth 
+     6 Afghanistan Asia       1977    38.4 14880372      786. earth 
+     7 Afghanistan Asia       1982    39.9 12881816      978. earth 
+     8 Afghanistan Asia       1987    40.8 13867957      852. earth 
+     9 Afghanistan Asia       1992    41.7 16317921      649. earth 
+    10 Afghanistan Asia       1997    41.8 22227415      635. earth 
+    # ℹ 1,694 more rows
+
+</details>
+
+------------------------------------------------------------------------
 
 <br>
 
@@ -610,8 +657,10 @@ gapminder %>%
 
 Above, we computed the mean for two columns, across all rows. This is
 already useful, but in combination with the helper function
-`group_by()`, `summarize()` becomes really powerful. For example, let’s
-compute the mean GDP and mean life expectancy by continent:
+`group_by()`, `summarize()` becomes really powerful.
+
+For example, let’s compute the mean GDP and mean life expectancy
+separately for each continent:
 
 ``` r
 gapminder %>%
@@ -629,7 +678,42 @@ gapminder %>%
     4 Europe      14469.      71.9
     5 Oceania     18622.      74.3
 
+`group_by()` implicitly splits a data frame into groups of rows: here,
+one group for observations from each continent. After that, operations
+like in `summarize()` will happen separately for each group, which is
+how we ended up with per-continent means.
+
+Finally, another powerful feature is that we can *group by multiple
+variables* – for example, by `year` *and* `continent`:
+
+``` r
+gapminder %>%
+  group_by(continent, year) %>%
+  summarize(mean_gdp = mean(gdpPercap))
+```
+
+    `summarise()` has grouped output by 'continent'. You can override using the
+    `.groups` argument.
+
+    # A tibble: 60 × 3
+    # Groups:   continent [5]
+       continent  year mean_gdp
+       <fct>     <int>    <dbl>
+     1 Africa     1952    1253.
+     2 Africa     1957    1385.
+     3 Africa     1962    1598.
+     4 Africa     1967    2050.
+     5 Africa     1972    2340.
+     6 Africa     1977    2586.
+     7 Africa     1982    2482.
+     8 Africa     1987    2283.
+     9 Africa     1992    2282.
+    10 Africa     1997    2379.
+    # ℹ 50 more rows
+
 <br>
+
+------------------------------------------------------------------------
 
 ### Challenge 3
 
@@ -679,49 +763,7 @@ lifeExp_bycountry %>%
 
 </details>
 
-Another powerful feature is that we can group by multiple variables –
-for example, by `year` *and* `continent`:
-
-``` r
-gapminder %>%
-  group_by(continent, year) %>%
-  summarize(mean_gdp = mean(gdpPercap))
-```
-
-    `summarise()` has grouped output by 'continent'. You can override using the
-    `.groups` argument.
-
-    # A tibble: 60 × 3
-    # Groups:   continent [5]
-       continent  year mean_gdp
-       <fct>     <int>    <dbl>
-     1 Africa     1952    1253.
-     2 Africa     1957    1385.
-     3 Africa     1962    1598.
-     4 Africa     1967    2050.
-     5 Africa     1972    2340.
-     6 Africa     1977    2586.
-     7 Africa     1982    2482.
-     8 Africa     1987    2283.
-     9 Africa     1992    2282.
-    10 Africa     1997    2379.
-    # ℹ 50 more rows
-
-<br>
-
-## What’s next
-
-In your journey to become a skilled data frame wrangler in R, here are
-some additional topics that are very useful but beyond the scope of this
-workshop:
-
-- Joining/merging – combining multiple dataframes based on one or more
-  shared columns. This can be done with *dplyr*’s `join_*()` functions.
-
-- Pivoting/reshaping – moving between ‘wide’ and ‘long’ data formats
-  with `pivot_wider()` and `pivot_longer()` – this is covered in
-  [episode 13 of our focal Carpentries
-  lesson](https://swcarpentry.github.io/r-novice-gapminder/instructor/13-tidyr.html).
+------------------------------------------------------------------------
 
 <br>
 
@@ -772,3 +814,24 @@ gapminder %>%
     3 Asia        0.596
     4 Europe      0.286
     5 Oceania     0.775
+
+<br>
+
+## Learn more
+
+This material was adapted from [this Carpentries lesson
+episode](https://swcarpentry.github.io/r-novice-gapminder/instructor/12-dplyr.html).
+
+In your journey to become a skilled data frame wrangler in R, here are
+some additional topics that are very useful but beyond the scope of this
+workshop:
+
+- Joining/merging – combining multiple dataframes based on one or more
+  shared columns. This can be done with *dplyr*’s `join_*()` functions.
+
+- Pivoting/reshaping – moving between ‘wide’ and ‘long’ data formats
+  with `pivot_wider()` and `pivot_longer()` – this is covered in
+  [episode 13 of our focal Carpentries
+  lesson](https://swcarpentry.github.io/r-novice-gapminder/instructor/13-tidyr.html).
+
+<br>
