@@ -1,0 +1,72 @@
+---
+title: "Removed material"
+author: Jelmer Poelstra
+format: html
+editor: visual
+---
+
+Let's look at the data types a little more closely by creating a second version of our CSV file with cat data.
+
+-   Start by opening the `feline-data.csv` file in the RStudio editor pane if you don't still have it open there.
+
+-   Before you make any edits, save it under a new name by clicking `File` =\> `Save as` =\> and then using the file name `feline-data_v2.csv`.
+
+-   Add a line (row) to the file with the following data:
+
+```         
+tabby,2.3 or 2.4,1
+```
+
+-   Save the changes (`File` =\> `Save` or Ctrl/Cmd+S).
+
+Now, we'll load the new cats file like before, and check what type of data we find in the `weight` column:
+
+```{r}
+cats_v2 <- read.csv(file = "data/feline-data_v2.csv")
+typeof(cats_v2$weight)
+```
+
+Oh no, our weights aren't the `double` type anymore! And if we try to do the same math we did on them before, we run into trouble:
+
+```{r}
+cats_v2$weight + 2
+```
+
+Because one of the entries in the `weight` column is `2.3 or 2.4` and therefore not just a number, this column was instead assigned the `character` data type:
+
+```{r}
+str(cats_v2)
+```
+
+We might call this data type more flexible because character strings can store numbers while the numeric/double data type cannot store strings.
+
+
+## Connect mutate with logical filtering: ifelse
+
+When creating new variables, we can hook this with a logical condition. A simple combination of
+`mutate()` and `ifelse()` facilitates filtering right where it is needed: in the moment of creating something new.
+This easy-to-read statement is a fast and powerful way of discarding certain data (even though the overall dimension
+of the data frame will not change) or for updating values depending on this given condition.
+
+```{r}
+## keeping all data but "filtering" after a certain condition
+# calculate GDP only for people with a life expectation above 25
+gdp_pop_bycontinents_byyear_above25 <- gapminder %>%
+    mutate(gdp_billion = ifelse(lifeExp > 25, gdpPercap * pop / 10^9, NA)) %>%
+    group_by(continent, year) %>%
+    summarize(mean_gdpPercap = mean(gdpPercap),
+              sd_gdpPercap = sd(gdpPercap),
+              mean_pop = mean(pop),
+              sd_pop = sd(pop),
+              mean_gdp_billion = mean(gdp_billion),
+              sd_gdp_billion = sd(gdp_billion))
+
+## updating only if certain condition is fullfilled
+# for life expectations above 40 years, the gpd to be expected in the future is scaled
+gdp_future_bycontinents_byyear_high_lifeExp <- gapminder %>%
+    mutate(gdp_futureExpectation = ifelse(lifeExp > 40, gdpPercap * 1.5, gdpPercap)) %>%
+    group_by(continent, year) %>%
+    summarize(mean_gdpPercap = mean(gdpPercap),
+              mean_gdpPercap_expected = mean(gdp_futureExpectation))
+```
+
