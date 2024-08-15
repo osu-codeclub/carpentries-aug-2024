@@ -624,8 +624,8 @@ If you know that the input data is all of the same format (e.g. numbers),
 your analysis is much easier!
 Here, you will clean the cat data set.
 
-Create a new script in RStudio and copy and paste the following code into it.
-Then move on to the tasks below, which help you to fill in the gaps.
+**Create a new script in RStudio and copy and paste the following code into it.**
+Then move on to the tasks below, which help you to fill in the blanks (`_____`).
 
 ```
 # 1. Print the contents of the data frame in the console
@@ -634,8 +634,8 @@ _____
 # 2. Show an overview of the table with all data types
 _____(cats)
 
-# 3. The "weight" column has the incorrect data type __________.
-#    The correct data type is: ____________.
+# 3. The "weight" column has the incorrect data type _____.
+#    The correct data type is: _____.
 
 # 4. Correct the 4th weight data point with the mean of the two given values
 cats$weight[4] <- 2.35
@@ -643,43 +643,37 @@ cats$weight[4] <- 2.35
 cats
 
 # 5. Convert the weight to the right data type
-cats$weight <- ______________(cats$weight)
+cats$weight <- _____(cats$weight)
 
-#    Calculate the mean to test yourself
+# 6. Calculate the mean weight:
 mean(cats$weight)
-
-# If you see the correct mean value (and not NA), you did the exercise
-# correctly!
+# If you see the mean value 3.1625 and not NA, you did the exercise correctly!
 ```
 
 <br>
 
 <details><summary>Click for the solution</summary>
 
-```{r, eval=FALSE}
+```{r}
 # 1. Print the contents of the data frame in the console
 cats
 
 # 2. Show an overview of the table with all data types
 str(cats)
 
-# 3. The "weight" column has the incorrect data type character.
-#    The correct data type is: double.
+# 3. The "weight" column has the incorrect data type CHARACTER.
+#    The correct data type is: DOUBLE.
 
 # 4. Correct the 4th weight data point with the mean of the two given values
 cats$weight[4] <- 2.35
 #    Print the data again to see the effect
 cats
 
-# 5. Convert the weight to the right data type
+# 5. Convert the weight to the right data type (Note: as.numeric() also works)
 cats$weight <- as.double(cats$weight)
-#    The following is synonymous to the above:
-cats$weight <- as.numeric(cats$weight)
 
-#    Calculate the mean to test yourself
+# 6. Calculate the mean weight:
 mean(cats$weight)
-
-# If you see the mean value 3.1625 and not NA, you did the exercise correctly!
 ```
 
 </details>
