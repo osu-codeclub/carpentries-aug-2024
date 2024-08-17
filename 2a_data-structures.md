@@ -44,6 +44,7 @@ string:
   `vector2` above are objects, and should be referred to without quotes:
 
 ``` r
+# [Note that R will show auto-complete options after you type 3 characters]
 vector1
 ```
 
@@ -64,6 +65,16 @@ vector_fail <- panda
 
     Error in eval(expr, envir, enclos): object 'panda' not found
 
+As a side note, in the R console, you can press the **up arrow** to
+retrieve the previous command, and do so repeatedly to go back to older
+commands. Let’s practice that to get back our `vector1` command:
+
+``` r
+vector1
+```
+
+    [1] 8
+
 <br>
 
 ### Multi-element vectors
@@ -83,17 +94,17 @@ vector was created nevertheless.)
 `c()` can also append elements to an existing vector:
 
 ``` r
-vector4 <- c("a", "b")
-vector4
+vector_append <- c("vhagar", "meleys")
+vector_append
 ```
 
-    [1] "a" "b"
+    [1] "vhagar" "meleys"
 
 ``` r
-c(vector4, "SWC")
+c(vector_append, "balerion")
 ```
 
-    [1] "a"   "b"   "SWC"
+    [1] "vhagar"   "meleys"   "balerion"
 
 To create vectors with series of numbers, a couple of shortcuts are
 available. First, you can make series of whole numbers with the `:`
@@ -140,7 +151,7 @@ more about vectorization, see [episode
 9](https://swcarpentry.github.io/r-novice-gapminder/instructor/09-vectorization.html)
 from our Carpentries lesson.)
 
-<br>
+<br> <br>
 
 ------------------------------------------------------------------------
 
@@ -148,6 +159,7 @@ from our Carpentries lesson.)
 
 **A.** Start by making a vector `x` with the whole numbers 1 through 26.
 Then, multiply each element in the vector by 5 to create vector `y`.
+Check your results by printing both vectors.
 
 <details>
 <summary>
@@ -171,6 +183,8 @@ y
     [20] 100 105 110 115 120 125 130
 
 </details>
+
+<br>
 
 **B.** What do you think will be the result of the following operation?
 
@@ -223,10 +237,10 @@ head(vector_seq, n = 2)
     [1] 6.0 6.2
 
 ``` r
-tail(vector_seq, n = 4)
+tail(vector_seq)
 ```
 
-    [1] 7.4 7.6 7.8 8.0
+    [1] 7.0 7.2 7.4 7.6 7.8 8.0
 
 <br>
 
@@ -258,58 +272,20 @@ mean(vector_seq)
 
 <br>
 
-### Intermezzo: missing values (`NA`)
-
-R has a concept of missing data, which is important in statistical
-computing, as not all information/measurements are always available for
-all samples.
-
-Missing values are coded in R as `NA` (and this is not a character
-string, so it is not quoted):
-
-``` r
-# This vector will contain one missing value
-vector_NA <- c(1, 3, NA, 7)
-vector_NA
-```
-
-    [1]  1  3 NA  7
-
-The main reason to bring this up so early in your R journey is that you
-should be aware of the following: many functions that operate on vectors
-will return `NA` if any of the elements in the vector is `NA`:
-
-``` r
-sum(vector_NA)
-```
-
-    [1] NA
-
-The way to get around this is by setting `na.rm = TRUE` in such
-functions, for example:
-
-``` r
-sum(vector_NA, na.rm = TRUE)
-```
-
-    [1] 11
-
-<br>
-
 ### Extracting elements from vectors
 
 We can extract elements of a vector by “indexing” them using bracket
 notation. Here are a couple of examples:
 
-- Get the first element:
+- Get the second element:
 
 ``` r
-vector_seq[1]
+vector_seq[2]
 ```
 
-    [1] 6
+    [1] 6.2
 
-- Get the second through the fifth elements:
+- Get the elements 2 through 5:
 
 ``` r
 vector_seq[2:5]
@@ -354,9 +330,11 @@ Let’s start by making a toy data frame with some information about 3
 cats:
 
 ``` r
-cats <- data.frame(coat = c("calico", "black", "tabby"),
-                   weight = c(2.1, 5.0, 3.2),
-                   likes_string = c(1, 0, 1))
+cats <- data.frame(
+  coat = c("calico", "black", "tabby"),
+  weight = c(2.1, 5.0, 3.2),
+  likes_string = c(1, 0, 1)
+  )
 
 cats
 ```
@@ -402,82 +380,6 @@ cats$coat
 This kind of operation will return a vector. We won’t go into more
 detail about exploring (or manipulating) data frames, because we will do
 that with the *dplyr* package in the next episode.
-
-<br>
-
-### Writing and reading tabular data
-
-Let’s practice writing and reading data. First, we will write data to
-file that is in our R environment, and then we will read data that is in
-a file into our R environment.
-
-Via functions from an add-on package, R can interact with Excel
-spreadsheet files, but keeping your data in plain-text files generally
-benefits reproducibility. Tabular plain text files can be stored using a
-*Tab* as the delimiter (these are often called TSV files, and stored
-with a `.tsv` extension) or with a *comma* as the delimiter (these are
-often called CSV files, and stored with a `.csv` extension).
-
-We will use the `write.csv` function to write the `cats` data frame to a
-CSV file in our current working directory:
-
-``` r
-write.csv(x = cats, file = "feline-data.csv", row.names = FALSE)
-```
-
-Here, we are explicitly naming all arguments, which can be good practice
-for clarity:
-
-- `x` is the R object to write to file
-- `file` is the file name (which can include directories/folders)
-- We are setting `row.names = FALSE` to avoid writing the row names,
-  which by default are just row numbers.
-
-Let’s find our new file and click on it in RStudio’s Files pane, so the
-file will open in the editor, where it should look like this:
-
-    "coat","weight","likes_string"
-    "calico",2.1,1
-    "black",5,0
-    "tabby",3.2,1
-
-(Note that R adds double quotes `"..."` around strings – if you want to
-avoid this, add `quote = FALSE` to `write.csv()`.)
-
-------------------------------------------------------------------------
-
-Let’s also practice reading data from a file into R. We’ll use the
-`read.csv()` function for the file we just created:
-
-``` r
-cats2 <- read.csv(file = "feline-data.csv")
-cats2
-```
-
-        coat weight likes_string
-    1 calico    2.1            1
-    2  black    5.0            0
-    3  tabby    3.2            1
-
-A final note: `write.csv()` and `read.csv()` are really just two more
-specific convenience versions of the `write/read.table()` functions,
-which can be used to write and read in tabular data in any kind of plain
-text file.
-
-<br>
-
-### Other data structures
-
-We won’t go into details about R’s other data structures, which are less
-common than vectors and data frames. Two that are worth mentioning
-briefly, though, are:
-
-- **Matrix**, which can be convenient when you have tabular data that is
-  exclusively numeric (excluding names/labels).
-
-- **List**, which is more flexible (and complicated) than vectors: it
-  can contain multiple data types, and can also be hierarchically
-  structured.
 
 <br>
 
@@ -567,7 +469,53 @@ typeof(TRUE)
 
     [1] "logical"
 
+``` r
+typeof(FALSE)
+```
+
+    [1] "logical"
+
 <br>
+
+### Factors
+
+In R, categorical data, like different treatments in an experiment, can
+be stored as “factors”. Factors are useful for statistical analyses and
+also for plotting, the latter because you can specify a custom order
+among the so-called “levels” of the factor.
+
+``` r
+diet_vec <- c("high", "medium", "low", "low", "medium", "high")
+factor(diet_vec)
+```
+
+    [1] high   medium low    low    medium high  
+    Levels: high low medium
+
+In the example above, we turned a regular vector into a factor. The
+levels are sorted alphabetically by default, but we can manually specify
+an order that makes more sense and that would carry through if we would
+plot data associated with this factor:
+
+``` r
+diet_fct <- factor(diet_vec, levels = c("low", "medium", "high"))
+diet_fct
+```
+
+    [1] high   medium low    low    medium high  
+    Levels: low medium high
+
+For most intents and purposes, it makes sense to think of factors as
+another data type, even though technically, it is a kind of data
+structure build on the `integer` data type:
+
+``` r
+typeof(diet_fct)
+```
+
+    [1] "integer"
+
+<br> <br>
 
 ------------------------------------------------------------------------
 
@@ -595,7 +543,7 @@ Click for the solution
 
 ------------------------------------------------------------------------
 
-<br>
+<br> <br>
 
 ### Vectors and data frame columns can only have 1 data type
 
@@ -621,7 +569,7 @@ So, more formally, the reason that `cats$weight` + `cats$coat` failed is
 because we tried to apply a mathematical function to data that included
 strings.
 
-<br>
+<br> <br>
 
 ------------------------------------------------------------------------
 
@@ -664,11 +612,11 @@ We’ll talk about what happened here in the next section.
 ### Automatic Type Coercion
 
 What happened in the code from the challenge above is something called
-*type coercion*, and it is the source of many surprises and the reason
-why we need to be aware of the basic data types and how R will interpret
-them. When R encounters a *mix of types* (here `double` and `character`)
-to be combined into a single vector, it will force them all to be the
-same type.
+*type coercion*, which can be the source of many surprises and the
+reason why we need to be aware of the basic data types and how R will
+interpret them. When R encounters a *mix of types* (here `double` and
+`character`) to be combined into a single vector, it will force them all
+to be the same type.
 
 Here is another example:
 
@@ -741,6 +689,249 @@ as.logical(cats$likes_string)
 
     [1]  TRUE FALSE  TRUE
 
+As you may have guessed, though, not all type conversions are possible:
+
+``` r
+as.double("kiwi")
+```
+
+    Warning: NAs introduced by coercion
+
+    [1] NA
+
+<br> <br>
+
+------------------------------------------------------------------------
+
+### Challenge 4
+
+An important part of every data analysis is cleaning input data. Here,
+you will clean a cat data set that has an added observation with a
+problematic data entry.
+
+Start by creating the new data frame:
+
+``` r
+cats_v2 <- data.frame(
+  coat = c("calico", "black", "tabby", "tabby"),
+  weight = c(2.1, 5.0, 3.2, "2.3 or 2.4"),
+  likes_string = c(1, 0, 1, 1)
+)
+```
+
+Then move on to the tasks below, filling in the blanks (`_____`) and
+running the code:
+
+``` r
+# 1. Explore the data frame,
+#    including with an overview that shows the columns' data types:
+cats_v2
+_____(cats_v2)
+
+# 2. The "weight" column has the incorrect data type _____.
+#    The correct data type is: _____.
+
+# 3. Correct the 4th weight with the mean of the two given values,
+#    then print the data frame to see the effect:
+cats_v2$weight[4] <- 2.35
+cats_v2
+
+# 4. Convert the weight column to the right data type:
+cats_v2$weight <- _____(cats_v2$weight)
+
+# 5. Calculate the mean weight of the cats:
+_____
+```
+
+<br>
+
+<details>
+<summary>
+Click for the solution
+</summary>
+
+``` r
+# 1. Explore the data frame,
+#    including with an overview that shows the columns' data types:
+cats_v2
+```
+
+        coat     weight likes_string
+    1 calico        2.1            1
+    2  black          5            0
+    3  tabby        3.2            1
+    4  tabby 2.3 or 2.4            1
+
+``` r
+str(cats_v2)
+```
+
+    'data.frame':   4 obs. of  3 variables:
+     $ coat        : chr  "calico" "black" "tabby" "tabby"
+     $ weight      : chr  "2.1" "5" "3.2" "2.3 or 2.4"
+     $ likes_string: num  1 0 1 1
+
+``` r
+# 2. The "weight" column has the incorrect data type CHARACTER.
+#    The correct data type is: DOUBLE.
+
+# 3. Correct the 4th weight data point with the mean of the two given values,
+#    then print the data frame to see the effect:
+cats_v2$weight[4] <- 2.35
+cats_v2
+```
+
+        coat weight likes_string
+    1 calico    2.1            1
+    2  black      5            0
+    3  tabby    3.2            1
+    4  tabby   2.35            1
+
+``` r
+# 4. Convert the weight column to the right data type:
+cats_v2$weight <- as.double(cats_v2$weight)
+
+# 5. Calculate the mean weight of the cats:
+mean(cats_v2$weight)
+```
+
+    [1] 3.1625
+
+</details>
+
+------------------------------------------------------------------------
+
+<br> <br>
+
+## Learn more
+
+This material was adapted from [this Carpentries lesson
+episode](https://swcarpentry.github.io/r-novice-gapminder/04-data-structures-part1.html).
+To learn more about data types and data structures, see [this episode
+from a separate Carpentries
+lesson](https://swcarpentry.github.io/r-novice-inflammation/13-supp-data-structures.html).
+
+------------------------------------------------------------------------
+
+<br>
+
+## Bonus
+
+### Writing and reading tabular data
+
+Let’s practice writing and reading data. First, we will write data to
+file that is in our R environment, and then we will read data that is in
+a file into our R environment.
+
+Via functions from an add-on package, R can interact with Excel
+spreadsheet files, but keeping your data in plain-text files generally
+benefits reproducibility. Tabular plain text files can be stored using a
+*Tab* as the delimiter (these are often called TSV files, and stored
+with a `.tsv` extension) or with a *comma* as the delimiter (these are
+often called CSV files, and stored with a `.csv` extension).
+
+We will use the `write.csv` function to write the `cats` data frame to a
+CSV file in our current working directory:
+
+``` r
+write.csv(x = cats, file = "feline-data.csv", row.names = FALSE)
+```
+
+Here, we are explicitly naming all arguments, which can be good practice
+for clarity:
+
+- `x` is the R object to write to file
+- `file` is the file name (which can include directories/folders)
+- We are setting `row.names = FALSE` to avoid writing the row names,
+  which by default are just row numbers.
+
+In RStudio’s **Files pane**, let’s find our new file, click on it, and
+then click “View File”. That way, the file will open in the editor,
+where it should look like this:
+
+    "coat","weight","likes_string"
+    "calico",2.1,1
+    "black",5,0
+    "tabby",3.2,1
+
+(Note that R adds double quotes `"..."` around strings – if you want to
+avoid this, add `quote = FALSE` to `write.csv()`.)
+
+------------------------------------------------------------------------
+
+Let’s also practice reading data from a file into R. We’ll use the
+`read.csv()` function for the file we just created:
+
+``` r
+cats_reread <- read.csv(file = "feline-data.csv")
+cats_reread
+```
+
+        coat weight likes_string
+    1 calico    2.1            1
+    2  black    5.0            0
+    3  tabby    3.2            1
+
+A final note: `write.csv()` and `read.csv()` are really just two more
+specific convenience versions of the `write/read.table()` functions,
+which can be used to write and read in tabular data in any kind of plain
+text file.
+
+### A few other data structures in R
+
+We did not go into details about R’s other data structures, which are
+less common than vectors and data frames. Two that are worth mentioning
+briefly, though, are:
+
+- **Matrix**, which can be convenient when you have tabular data that is
+  exclusively numeric (excluding names/labels).
+
+- **List**, which is more flexible (and complicated) than vectors: it
+  can contain multiple data types, and can also be hierarchically
+  structured.
+
+<br>
+
+### Missing values (`NA`)
+
+R has a concept of missing data, which is important in statistical
+computing, as not all information/measurements are always available for
+each sample.
+
+In R, missing values are coded as `NA` (and this is not a character
+string, so it is not quoted):
+
+``` r
+# This vector will contain one missing value
+vector_NA <- c(1, 3, NA, 7)
+vector_NA
+```
+
+    [1]  1  3 NA  7
+
+The main reason to bring this up so early in your R journey is that you
+should be aware of the following: many functions that operate on vectors
+will return `NA` if any of the elements in the vector is `NA`:
+
+``` r
+sum(vector_NA)
+```
+
+    [1] NA
+
+The way to get around this is by setting `na.rm = TRUE` in such
+functions, for example:
+
+``` r
+sum(vector_NA, na.rm = TRUE)
+```
+
+    [1] 11
+
+<br>
+
+### More on the `logical` data type
+
 If you think `1`/`0` could be more useful than `TRUE`/`FALSE` because
 it’s easier to count the number of cases something is true or false,
 consider:
@@ -753,125 +944,3 @@ TRUE + TRUE
 
 So, logicals can be used as if they were numbers, in which case `FALSE`
 represents 0 and `TRUE` represents 1.
-
-As you may have guessed, though, not all type conversions are possible:
-
-``` r
-as.double("kiwi")
-```
-
-    Warning: NAs introduced by coercion
-
-    [1] NA
-
-<br>
-
-------------------------------------------------------------------------
-
-### Challenge 4
-
-We’ll start by downloading a file and reading that into a data frame:
-
-``` r
-URL <- "https://raw.githubusercontent.com/swcarpentry/r-novice-gapminder/main/episodes/data/feline-data_v2.csv"
-download.file(url = URL, destfile = "feline-data_v2.csv")
-
-cats <- read.csv("feline-data_v2.csv")
-```
-
-An important part of every data analysis is cleaning the input data. If
-you know that the input data is all of the same format (e.g. numbers),
-your analysis is much easier! Here, you will clean the cat data set.
-
-**Create a new script in RStudio and copy and paste the following code
-into it.** Then move on to the tasks below, which help you to fill in
-the blanks (`_____`).
-
-    # 1. Print the contents of the data frame in the console
-    _____
-
-    # 2. Show an overview of the table with all data types
-    _____(cats)
-
-    # 3. The "weight" column has the incorrect data type _____.
-    #    The correct data type is: _____.
-
-    # 4. Correct the 4th weight data point with the mean of the two given values
-    cats$weight[4] <- 2.35
-    #    print the data again to see the effect
-    cats
-
-    # 5. Convert the weight to the right data type
-    cats$weight <- _____(cats$weight)
-
-    # 6. Calculate the mean weight:
-    mean(cats$weight)
-    # If you see the mean value 3.1625 and not NA, you did the exercise correctly!
-
-<br>
-
-<details>
-<summary>
-Click for the solution
-</summary>
-
-``` r
-# 1. Print the contents of the data frame in the console
-cats
-```
-
-        coat     weight likes_string
-    1 calico        2.1            1
-    2  black          5            0
-    3  tabby        3.2            1
-    4  tabby 2.3 or 2.4            1
-
-``` r
-# 2. Show an overview of the table with all data types
-str(cats)
-```
-
-    'data.frame':   4 obs. of  3 variables:
-     $ coat        : chr  "calico" "black" "tabby" "tabby"
-     $ weight      : chr  "2.1" "5" "3.2" "2.3 or 2.4"
-     $ likes_string: int  1 0 1 1
-
-``` r
-# 3. The "weight" column has the incorrect data type CHARACTER.
-#    The correct data type is: DOUBLE.
-
-# 4. Correct the 4th weight data point with the mean of the two given values
-cats$weight[4] <- 2.35
-#    Print the data again to see the effect
-cats
-```
-
-        coat weight likes_string
-    1 calico    2.1            1
-    2  black      5            0
-    3  tabby    3.2            1
-    4  tabby   2.35            1
-
-``` r
-# 5. Convert the weight to the right data type (Note: as.numeric() also works)
-cats$weight <- as.double(cats$weight)
-
-# 6. Calculate the mean weight:
-mean(cats$weight)
-```
-
-    [1] 3.1625
-
-</details>
-
-------------------------------------------------------------------------
-
-<br>
-
-## Learn more
-
-This material was adapted from [this Carpentries lesson
-episode](https://swcarpentry.github.io/r-novice-gapminder/04-data-structures-part1.html).
-To learn more about data types and data structures, see [this episode
-from a separate Carpentries
-lesson](https://swcarpentry.github.io/r-novice-inflammation/13-supp-data-structures.html).
