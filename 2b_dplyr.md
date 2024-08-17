@@ -52,7 +52,7 @@ that were already in your environment.
 
 <br>
 
-## Our data set and the pipe
+## The `gapminder` data set
 
 In this section and in the afternoon, we will work with the `gapminder`
 data set. This data set is available in a package (while most packages
@@ -106,8 +106,9 @@ and 2007):
 To subset a data frame by keeping or removing certain columns, we can
 use the `select()` function.
 
-By default, this function will only keep the columns that you specify,
-which you typically do simply by listing those columns by name:
+By default, this function will only **keep the columns that you
+specify**, which you typically do simply by listing those columns by
+name:
 
 ``` r
 select(.data = gapminder, year, country, gdpPercap)
@@ -131,8 +132,13 @@ select(.data = gapminder, year, country, gdpPercap)
 In the command above, the first argument was the data frame, whereas the
 other arguments were the (unquoted!) names of columns we wanted to keep.
 
-We can also work the other way around, specifying columns that should be
-removed, by prefacing their name with a `!` (or a `-`):
+The order of the columns in the output data frame is exactly as you list
+them in `select()`, and doesn’t need to be the same as in the input data
+frame. In other words, `select()` is also one way to reorder columns. In
+the example above, we moved year to come before country, for example.
+
+We can also **specify columns that should be removed**, by prefacing
+their name with a `!` (or a `-`):
 
 ``` r
 select(.data = gapminder, !continent)
@@ -153,17 +159,10 @@ select(.data = gapminder, !continent)
     10 Afghanistan  1997    41.8 22227415      635.
     # ℹ 1,694 more rows
 
-Two closing remarks about `select()`:
-
-- There are also ways to select *ranges* of columns, and to match
-  columns by their *partial names*, but that is beyond the scope of this
-  short workshop (check the `select()` help by typing `?select` to learn
-  more about this).
-
-- Because the order of the columns in the output data frame will be
-  exactly as you listed them, you can also use `select()` to **reorder
-  columns**. (There is also a specialized `reorder()` function that is
-  handy especially when a data frame has *many* columns.)
+There are also ways to select *ranges* of columns, and to match columns
+by their *partial names*, but that is beyond the scope of this short
+workshop (check the `select()` help by typing `?select` to learn more
+about this).
 
 <br>
 
@@ -306,7 +305,7 @@ gapminder %>%
     10 Albania Europe     1997    73.0 3428038     3193.
     # ℹ 350 more rows
 
-Note the use of *double* equals signs `==` to test for equality!
+(Remember to use *two* equals signs `==` to test for equality!)
 
 ### Filter based on multiple conditions
 
@@ -314,19 +313,15 @@ It’s also possible to filter based on multiple conditions:
 
 ``` r
 gapminder %>%
-  filter(continent == "Europe", year == 2007, lifeExp > 80)
+  filter(continent == "Asia", year == 2007, lifeExp > 80)
 ```
 
-    # A tibble: 7 × 6
-      country     continent  year lifeExp      pop gdpPercap
-      <fct>       <fct>     <int>   <dbl>    <int>     <dbl>
-    1 France      Europe     2007    80.7 61083916    30470.
-    2 Iceland     Europe     2007    81.8   301931    36181.
-    3 Italy       Europe     2007    80.5 58147733    28570.
-    4 Norway      Europe     2007    80.2  4627926    49357.
-    5 Spain       Europe     2007    80.9 40448191    28821.
-    6 Sweden      Europe     2007    80.9  9031088    33860.
-    7 Switzerland Europe     2007    81.7  7554661    37506.
+    # A tibble: 3 × 6
+      country          continent  year lifeExp       pop gdpPercap
+      <fct>            <fct>     <int>   <dbl>     <int>     <dbl>
+    1 Hong Kong, China Asia       2007    82.2   6980412    39725.
+    2 Israel           Asia       2007    80.7   6426679    25523.
+    3 Japan            Asia       2007    82.6 127467972    31656.
 
 By default, multiple conditions are combined in an *AND* fashion — in
 other words, in a given row, *each* condition needs to be met for that
@@ -360,27 +355,27 @@ Finally, let’s practice a bit more with pipelines that use multiple
 
 ``` r
 gapminder %>%
-  filter(continent == "Europe") %>%
+  filter(continent == "Americas") %>%
   select(year, country, gdpPercap) %>%
   rename(gdp_per_capita = gdpPercap)
 ```
 
-    # A tibble: 360 × 3
-        year country gdp_per_capita
-       <int> <fct>            <dbl>
-     1  1952 Albania          1601.
-     2  1957 Albania          1942.
-     3  1962 Albania          2313.
-     4  1967 Albania          2760.
-     5  1972 Albania          3313.
-     6  1977 Albania          3533.
-     7  1982 Albania          3631.
-     8  1987 Albania          3739.
-     9  1992 Albania          2497.
-    10  1997 Albania          3193.
-    # ℹ 350 more rows
+    # A tibble: 300 × 3
+        year country   gdp_per_capita
+       <int> <fct>              <dbl>
+     1  1952 Argentina          5911.
+     2  1957 Argentina          6857.
+     3  1962 Argentina          7133.
+     4  1967 Argentina          8053.
+     5  1972 Argentina          9443.
+     6  1977 Argentina         10079.
+     7  1982 Argentina          8998.
+     8  1987 Argentina          9140.
+     9  1992 Argentina          9308.
+    10  1997 Argentina         10967.
+    # ℹ 290 more rows
 
-<br>
+<br> <br>
 
 ### Challenge 1
 
@@ -419,7 +414,7 @@ It has 624 rows.
 
 </details>
 
-<br>
+<br> <br>
 
 ## `arrange()` to sort data frames
 
@@ -565,7 +560,7 @@ gapminder %>%
     10 Afghanistan Asia       1997    41.8 22.2       635.
     # ℹ 1,694 more rows
 
-<br>
+<br> <br>
 
 ------------------------------------------------------------------------
 
@@ -635,7 +630,7 @@ gapminder %>%
 
 ------------------------------------------------------------------------
 
-<br>
+<br> <br>
 
 ## `summarize()` to compute (per-group) summary statistics
 
@@ -646,14 +641,14 @@ First, let’s see what `summarize()` does when used by itself:
 
 ``` r
 gapminder %>%
-  summarize(mean_gdp = mean(gdpPercap),
-            mean_life = mean(lifeExp))
+  summarize(mean_gdpPercap = mean(gdpPercap),
+            mean_lifeExp = mean(lifeExp))
 ```
 
     # A tibble: 1 × 2
-      mean_gdp mean_life
-         <dbl>     <dbl>
-    1    7215.      59.5
+      mean_gdpPercap mean_lifeExp
+               <dbl>        <dbl>
+    1          7215.         59.5
 
 Above, we computed the mean for two columns, across all rows. This is
 already useful, but in combination with the helper function
@@ -665,18 +660,18 @@ separately for each continent:
 ``` r
 gapminder %>%
   group_by(continent) %>%
-  summarize(mean_gdp = mean(gdpPercap),
-            mean_life = mean(lifeExp))
+  summarize(mean_gdpPercap = mean(gdpPercap),
+            mean_lifeExp = mean(lifeExp))
 ```
 
     # A tibble: 5 × 3
-      continent mean_gdp mean_life
-      <fct>        <dbl>     <dbl>
-    1 Africa       2194.      48.9
-    2 Americas     7136.      64.7
-    3 Asia         7902.      60.1
-    4 Europe      14469.      71.9
-    5 Oceania     18622.      74.3
+      continent mean_gdpPercap mean_lifeExp
+      <fct>              <dbl>        <dbl>
+    1 Africa             2194.         48.9
+    2 Americas           7136.         64.7
+    3 Asia               7902.         60.1
+    4 Europe            14469.         71.9
+    5 Oceania           18622.         74.3
 
 `group_by()` implicitly splits a data frame into groups of rows: here,
 one group for observations from each continent. After that, operations
@@ -689,29 +684,30 @@ variables* – for example, by `year` *and* `continent`:
 ``` r
 gapminder %>%
   group_by(continent, year) %>%
-  summarize(mean_gdp = mean(gdpPercap))
+  summarize(mean_gdpPercap = mean(gdpPercap),
+            mean_lifeExp = mean(lifeExp))
 ```
 
     `summarise()` has grouped output by 'continent'. You can override using the
     `.groups` argument.
 
-    # A tibble: 60 × 3
+    # A tibble: 60 × 4
     # Groups:   continent [5]
-       continent  year mean_gdp
-       <fct>     <int>    <dbl>
-     1 Africa     1952    1253.
-     2 Africa     1957    1385.
-     3 Africa     1962    1598.
-     4 Africa     1967    2050.
-     5 Africa     1972    2340.
-     6 Africa     1977    2586.
-     7 Africa     1982    2482.
-     8 Africa     1987    2283.
-     9 Africa     1992    2282.
-    10 Africa     1997    2379.
+       continent  year mean_gdpPercap mean_lifeExp
+       <fct>     <int>          <dbl>        <dbl>
+     1 Africa     1952          1253.         39.1
+     2 Africa     1957          1385.         41.3
+     3 Africa     1962          1598.         43.3
+     4 Africa     1967          2050.         45.3
+     5 Africa     1972          2340.         47.5
+     6 Africa     1977          2586.         49.6
+     7 Africa     1982          2482.         51.6
+     8 Africa     1987          2283.         53.3
+     9 Africa     1992          2282.         53.6
+    10 Africa     1997          2379.         53.6
     # ℹ 50 more rows
 
-<br>
+<br> <br>
 
 ------------------------------------------------------------------------
 
@@ -742,7 +738,7 @@ bonus to only see the top n, here top 1:
 ``` r
 lifeExp_bycountry %>%
    arrange(mean_lifeExp) %>%
-   head(1)
+   head(n = 1)
 ```
 
     # A tibble: 1 × 2
@@ -753,7 +749,7 @@ lifeExp_bycountry %>%
 ``` r
 lifeExp_bycountry %>%
    arrange(desc(mean_lifeExp)) %>%
-   head(1)
+   head(n = 1)
 ```
 
     # A tibble: 1 × 2
@@ -765,7 +761,7 @@ lifeExp_bycountry %>%
 
 ------------------------------------------------------------------------
 
-<br>
+<br> <br>
 
 ## Bonus: `count()` and `n()`
 
@@ -833,5 +829,3 @@ workshop:
   with `pivot_wider()` and `pivot_longer()` – this is covered in
   [episode 13 of our focal Carpentries
   lesson](https://swcarpentry.github.io/r-novice-gapminder/instructor/13-tidyr.html).
-
-<br>
